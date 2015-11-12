@@ -1,0 +1,38 @@
+解决问题：拥有自己的VPN主机
+
+付出：
+a)国外服务器（如aliyun的美国服务区（70元一个月））
+b)有一个VPN教程
+
+步骤：
+a)2015-11-11购入aliyun ECS美国硅谷最低配置，预安装CENOS7.0（75元/月，当天七折52.5）买了3个月
+b)下载一个xshell,连上你的ECS，按顺序输入命令执行。
+#1.下载vpn_centos6.sh
+[root@iZu1k5pzirpZ ~]# wget http://www.hi-vps.com/shell/vpn_centos6.sh
+[root@iZu1k5pzirpZ ~]# ll
+#2.更改vpn_centos6.sh权限
+[root@iZu1k5pzirpZ ~]# chmod a+x ./vpn_centos6.sh 
+[root@iZu1k5pzirpZ ~]# ll
+#3.安装vpn_centos6.sh
+[root@iZu1k5pzirpZ ~]# ./vpn_centos6.sh 
+#注意：安装完成后，会有一个VPNa账号密码，注意记录
+#4.修改配置
+[root@iZu1k5pzirpZ ~]# vi /etc/sysctl.conf
+#追加或修改： net.ipv4.ip_forward = 1
+#5.配置路由
+[root@iZu1k5pzirpZ ~]# iptables -A INPUT -p tcp -m state --state NEW -m tcp --dport 1723 -j ACCEPT
+[root@iZu1k5pzirpZ ~]# iptables -t nat -A POSTROUTING -s 172.16.36.0/255.255.255.0 -j SNAT --to-source 47.88.5.xx(自己的公网IP)
+[root@iZu1k5pzirpZ ~]# iptables -A FORWARD -p tcp --syn -s 172.16.36.0/255.255.255.0 -j TCPMSS --set-mss 1356
+[root@iZu1k5pzirpZ ~]# iptables-save
+[root@iZu1k5pzirpZ ~]# service --status-all
+#6.重启，完成。
+[root@iZu1k5pzirpZ ~]# systemctl start iptables
+[root@iZu1k5pzirpZ ~]# netstat -npa
+[root@iZu1k5pzirpZ ~]# iptables --list
+
+c)在PC/MOBILE上，输入自己的VPN账号密码，开始你的VPN（PP2P翻墙）之旅吧！
+注：WIN10设置好VPN账号密码后，需要将网卡的DNS设置成谷歌的DNS（8.8.8.8 / 8.8.4.4）
+
+以上d全是本人亲测有效。
+52.5元一个月r的VPN，略贵，但是总体还算流畅，1M贷款，下载约30+KB（实测）。
+
